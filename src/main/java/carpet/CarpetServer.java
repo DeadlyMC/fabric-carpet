@@ -22,12 +22,14 @@ import carpet.logging.LoggerRegistry;
 import carpet.script.CarpetScriptServer;
 import carpet.settings.CarpetSettings;
 import carpet.settings.SettingsManager;
+import carpet.utils.ClientUtils;
 import carpet.utils.HUDController;
 import carpet.utils.MobAI;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 
 public class CarpetServer // static for now - easier to handle all around the code, its one anyways
 {
@@ -36,6 +38,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     public static CarpetScriptServer scriptServer;
     public static SettingsManager settingsManager;
     public static List<CarpetExtension> extensions = new ArrayList<>();
+    public static final Identifier CARPET_CHANNEL_NAME = new Identifier("carpet:client");
 
     // Separate from onServerLoaded, because a server can be loaded multiple times in singleplayer
     public static void manageExtension(CarpetExtension extension)
@@ -101,6 +104,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     {
         LoggerRegistry.playerConnected(player);
         extensions.forEach(e -> e.onPlayerLoggedIn(player));
+        ClientUtils.sendCarpetInfo(player);
     }
 
     public static void onPlayerLoggedOut(ServerPlayerEntity player)
